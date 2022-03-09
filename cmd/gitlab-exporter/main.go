@@ -1,13 +1,19 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/seawolflin/gitlab-exporter/internal/collector"
+	"log"
+	"net/http"
+)
 
 func main() {
-	r := gin.Default()
-	r.GET("/", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"Blog": "www.seawolflin.com",
-		})
-	})
-	r.Run(":8080")
+	u := collector.NewUserCollector()
+	prometheus.MustRegister(u)
+
+	http.Handle("/metrics", promhttp.Handler())
+
+	log.Println("Beginning to serve on port :8080")
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
