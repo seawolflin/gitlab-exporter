@@ -1,11 +1,13 @@
 package collector
 
-import "github.com/prometheus/client_golang/prometheus"
+import (
+	"github.com/prometheus/client_golang/prometheus"
+	"strconv"
+)
+import gitlabUser "github.com/seawolflin/gitlab-exporter/internal/gitlab"
 
 type userCollector struct {
-	userStateMetric          *prometheus.Desc
-	userLastActivityOnMetric *prometheus.Desc
-	userIsAdminMetric        *prometheus.Desc
+	userStateMetric *prometheus.Desc
 }
 
 func init() {
@@ -16,26 +18,37 @@ func init() {
 func newUserCollector() *userCollector {
 	return &userCollector{
 		userStateMetric: prometheus.NewDesc("gitlab_user_state",
-			"", []string{"name", "userName", "createAt"}, nil),
-		userLastActivityOnMetric: prometheus.NewDesc("gitlab_user_last_activity_on",
-			"", []string{"name", "userName", "createAt"}, nil),
-		userIsAdminMetric: prometheus.NewDesc("gitlab_user_is_admin",
-			"", []string{"name", "userName", "createAt"}, nil),
+			"", []string{"name", "userName", "createAt", "isAdmin", "lastActivityOn"}, nil),
 	}
 }
 
 func (collector *userCollector) Describe(ch chan<- *prometheus.Desc) {
 	ch <- collector.userStateMetric
-	ch <- collector.userLastActivityOnMetric
-	ch <- collector.userIsAdminMetric
 }
 
 func (collector *userCollector) Collect(ch chan<- prometheus.Metric) {
+	users := gitlabUser.ListAll()
 
-	ch <- prometheus.MustNewConstMetric(collector.userStateMetric, prometheus.CounterValue, 1,
-		"Alice", "alice", "2022-01-10")
-	ch <- prometheus.MustNewConstMetric(collector.userLastActivityOnMetric, prometheus.CounterValue, 1,
-		"Alice", "alice", "2022-01-10")
-	ch <- prometheus.MustNewConstMetric(collector.userIsAdminMetric, prometheus.CounterValue, 1,
-		"Alice", "alice", "2022-01-10")
+	for _, user := range users {
+		ch <- prometheus.MustNewConstMetric(collector.userStateMetric, prometheus.GaugeValue,
+			convertStateToValue(user.State),
+			user.Name, user.Username, user.CreatedAt.String(), strconv.FormatBool(user.IsAdmin),
+			func() string {
+				if user.LastActivityOn != nil {
+					return user.LastActivityOn.String()
+				}
+				return ""
+			}())
+	}
+}
+
+func convertStateToValue(state string) float64 {
+	switch state {
+	case "active":
+		return 1
+	case "blocked":
+		return 2
+	default:
+		return -1
+	}
 }
