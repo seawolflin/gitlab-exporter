@@ -14,6 +14,7 @@ type context struct {
 
 const (
 	API_PREFIX = "/api/v4"
+	USERS      = "/users"
 )
 
 var ins *context
@@ -33,12 +34,11 @@ func init() {
 
 func (ctx *context) Parse() {
 	flag.Parse()
-	u := url.URL{}
-	url, err := u.Parse(ctx.gitlabUrl)
+	u, err := url.Parse(ctx.gitlabUrl)
 	if err != nil {
 		panic("无效的Gitlab地址")
 	}
-	ctx.url = url
+	ctx.url = u
 }
 
 func (ctx *context) Url(path string) {

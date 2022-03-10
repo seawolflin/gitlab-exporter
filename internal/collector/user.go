@@ -8,7 +8,12 @@ type userCollector struct {
 	userIsAdminMetric        *prometheus.Desc
 }
 
-func NewUserCollector() *userCollector {
+func init() {
+	u := newUserCollector()
+	prometheus.MustRegister(u)
+}
+
+func newUserCollector() *userCollector {
 	return &userCollector{
 		userStateMetric: prometheus.NewDesc("gitlab_user_state",
 			"", []string{"name", "userName", "createAt"}, nil),
