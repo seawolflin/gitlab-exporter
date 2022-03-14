@@ -57,5 +57,5 @@ func listUserFromGitlab(c *cache.Cache) {
 		users = append(users, us...)
 	}
 
-	c.Set("users", usersCache{users}, 12*time.Second)
+	c.Set("users", usersCache{users}, 24*time.Hour)
 }
