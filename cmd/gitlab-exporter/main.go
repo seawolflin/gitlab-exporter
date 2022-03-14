@@ -2,7 +2,8 @@ package main
 
 import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/seawolflin/gitlab-exporter/internal/context"
+	"github.com/seawolflin/gitlab-exporter/internal/core/context"
+	"github.com/seawolflin/gitlab-exporter/internal/core/initializer"
 	"log"
 	"net/http"
 )
@@ -12,6 +13,8 @@ import _ "github.com/seawolflin/gitlab-exporter/internal/collector"
 
 func main() {
 	context.GetInstance().Parse()
+
+	initializer.InitAll()
 
 	http.Handle("/metrics", promhttp.Handler())
 
