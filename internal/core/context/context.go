@@ -3,6 +3,7 @@ package context
 import (
 	"flag"
 	"github.com/patrickmn/go-cache"
+	"github.com/robfig/cron/v3"
 	"github.com/xanzy/go-gitlab"
 	"net/url"
 	"sync"
@@ -16,6 +17,11 @@ type context struct {
 	cache                      *cache.Cache // 缓存gitlab上的数据，不需要每次都请求
 	onCacheEvictedHandlers     map[string]func(c *cache.Cache)
 	onCacheEvictedHandlersLock *sync.RWMutex
+	c                          *cron.Cron
+}
+
+func (ctx *context) Cron() *cron.Cron {
+	return ctx.c
 }
 
 func (ctx *context) Cache() *cache.Cache {
@@ -60,6 +66,9 @@ func (ctx *context) Parse() {
 
 		go ctx.onCacheEvictedHandlers[key](ctx.cache)
 	})
+
+	ctx.c = cron.New()
+	ctx.c.Start()
 }
 
 func (ctx context) OnCacheEvicted(key string, f func(c *cache.Cache)) {

@@ -4,10 +4,9 @@ import (
 	"github.com/patrickmn/go-cache"
 	"github.com/seawolflin/gitlab-exporter/internal/core/context"
 	"github.com/seawolflin/gitlab-exporter/internal/core/initializer"
+	"github.com/xanzy/go-gitlab"
 	"log"
 	"time"
-
-	"github.com/xanzy/go-gitlab"
 )
 
 type usersCache struct {
@@ -19,6 +18,13 @@ const CacheKey = "users"
 func init() {
 	initializer.Registry(func() {
 		context.GetInstance().OnCacheEvicted(CacheKey, listUserFromGitlab)
+
+		_, err := context.GetInstance().Cron().AddFunc("@every 24h", func() {
+			listUserFromGitlab(context.GetInstance().Cache())
+		})
+		if err != nil {
+			log.Fatalf("Add User Cron err, err: %s", err.Error())
+		}
 	})
 }
 

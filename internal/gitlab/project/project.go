@@ -18,6 +18,13 @@ const CacheKey = "projects"
 func init() {
 	initializer.Registry(func() {
 		context.GetInstance().OnCacheEvicted(CacheKey, listProjectFromGitlab)
+
+		_, err := context.GetInstance().Cron().AddFunc("@every 30m", func() {
+			listProjectFromGitlab(context.GetInstance().Cache())
+		})
+		if err != nil {
+			log.Fatalf("Add User Cron err, err: %s", err.Error())
+		}
 	})
 }
 

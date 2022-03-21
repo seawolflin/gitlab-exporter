@@ -5,6 +5,7 @@ go 1.17
 require (
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/prometheus/client_golang v1.12.1
+	github.com/robfig/cron/v3 v3.0.1
 	github.com/xanzy/go-gitlab v0.59.0
 )
 
