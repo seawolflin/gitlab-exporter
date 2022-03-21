@@ -1,4 +1,4 @@
-package gitlab
+package user
 
 import (
 	"github.com/patrickmn/go-cache"
@@ -14,15 +14,17 @@ type usersCache struct {
 	cache []*gitlab.User
 }
 
+const CacheKey = "users"
+
 func init() {
 	initializer.Registry(func() {
-		context.GetInstance().OnCacheEvicted("users", listUserFromGitlab)
+		context.GetInstance().OnCacheEvicted(CacheKey, listUserFromGitlab)
 	})
 }
 
 func ListAll() []*gitlab.User {
 	c := context.GetInstance().Cache()
-	if users, found := c.Get("users"); found {
+	if users, found := c.Get(CacheKey); found {
 		log.Println("read from cache.")
 		return users.(usersCache).cache
 	}
@@ -57,5 +59,5 @@ func listUserFromGitlab(c *cache.Cache) {
 		users = append(users, us...)
 	}
 
-	c.Set("users", usersCache{users}, 24*time.Hour)
+	c.Set(CacheKey, usersCache{users}, 24*time.Hour)
 }

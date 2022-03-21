@@ -2,9 +2,9 @@ package collector
 
 import (
 	"github.com/prometheus/client_golang/prometheus"
+	gitlabUser "github.com/seawolflin/gitlab-exporter/internal/gitlab/user"
 	"strconv"
 )
-import gitlabUser "github.com/seawolflin/gitlab-exporter/internal/gitlab"
 
 type userCollector struct {
 	userStateMetric *prometheus.Desc
