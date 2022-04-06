@@ -10,11 +10,14 @@ RUN apk --no-cache add git gcc \
     && GOPATH=/go go build -o gitlab-exporter github.com/seawolflin/gitlab-exporter/cmd/gitlab-exporter
 
 
-FROM golang:1.8 as prod
+FROM golang:1.18-alpine as prod
 
 
 WORKDIR /root/
 
 COPY --from=0 /go/src/github.com/seawolflin/gitlab-exporter/gitlab-exporter .
 
-CMD ["/root/gitlab-exporter"]
+ENV URL ""
+ENV TOKEN ""
+
+CMD /root/gitlab-exporter --url $URL --token $TOKEN
