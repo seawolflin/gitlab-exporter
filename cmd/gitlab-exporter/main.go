@@ -9,7 +9,10 @@ import (
 )
 
 // 匿名导入，为了执行collector的init方法，用于注册prometheus的方法注册collector
-import _ "github.com/seawolflin/gitlab-exporter/internal/collector"
+import (
+	_ "github.com/seawolflin/gitlab-exporter/internal/collector"
+	_ "github.com/seawolflin/gitlab-exporter/internal/db"
+)
 
 func main() {
 	context.GetInstance().Parse()

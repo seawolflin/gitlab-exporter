@@ -7,6 +7,8 @@ require (
 	github.com/prometheus/client_golang v1.12.1
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/xanzy/go-gitlab v0.59.0
+	gorm.io/driver/sqlite v1.3.1
+	gorm.io/gorm v1.23.4
 )
 
 require (
@@ -16,6 +18,9 @@ require (
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.1 // indirect
 	github.com/hashicorp/go-retryablehttp v0.6.8 // indirect
+	github.com/jinzhu/inflection v1.0.0 // indirect
+	github.com/jinzhu/now v1.1.4 // indirect
+	github.com/mattn/go-sqlite3 v1.14.9 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
 	github.com/prometheus/client_model v0.2.0 // indirect
 	github.com/prometheus/common v0.32.1 // indirect

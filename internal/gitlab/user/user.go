@@ -4,6 +4,7 @@ import (
 	"github.com/patrickmn/go-cache"
 	"github.com/seawolflin/gitlab-exporter/internal/core/context"
 	"github.com/seawolflin/gitlab-exporter/internal/core/initializer"
+	"github.com/seawolflin/gitlab-exporter/internal/models"
 	"github.com/xanzy/go-gitlab"
 	"log"
 	"time"
@@ -63,6 +64,11 @@ func listUserFromGitlab(c *cache.Cache) {
 			break
 		}
 		users = append(users, us...)
+	}
+
+	for _, user := range users {
+		u := models.User{}
+		u.AddOrUpdate(user)
 	}
 
 	c.Set(CacheKey, usersCache{users}, 24*time.Hour)
