@@ -1,6 +1,9 @@
 package utils
 
-import "reflect"
+import (
+	"reflect"
+	"strings"
+)
 
 func ConvertBoolToValue(b bool) float64 {
 	if b {
@@ -28,4 +31,13 @@ func CopyStruct(src, dst interface{}) {
 
 		dstValue.Set(srcValue)
 	}
+}
+
+func ListToString(list []string) string {
+	var result = ""
+	for _, s := range list {
+		result += s + ","
+	}
+
+	return strings.TrimSuffix(result, ",")
 }

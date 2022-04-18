@@ -13,5 +13,5 @@ func init() {
 }
 
 func Migrate() {
-	db.Migrate(&User{})
+	db.Migrate(&User{}, &Project{})
 }
