@@ -2,7 +2,6 @@ package db
 
 import (
 	"github.com/seawolflin/gitlab-exporter/internal/core/initializer"
-	"github.com/seawolflin/gitlab-exporter/internal/models"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -23,22 +22,11 @@ func Open() {
 	if err != nil {
 		panic("连接数据库失败！ err: " + err.Error())
 	}
-
-	migrate()
 }
 
-func migrate() {
-	err := DB.AutoMigrate(&models.User{})
+func Migrate(database ...interface{}) {
+	err := DB.AutoMigrate(database...)
 	if err != nil {
 		panic("数据库迁移失败! err: " + err.Error())
 	}
-
-	//pkg, err := importer.Default().Import("github.com/seawolflin/gitlab-exporter/internal/models")
-	//if err != nil {
-	//	panic("数据库迁移失败")
-	//}
-	//
-	//for _, declName := range pkg.Scope().Names() {
-	//	fmt.Println(declName)
-	//}
 }
