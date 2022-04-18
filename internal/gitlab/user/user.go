@@ -1,48 +1,37 @@
 package user
 
 import (
-	"github.com/patrickmn/go-cache"
 	"github.com/seawolflin/gitlab-exporter/internal/core/context"
 	"github.com/seawolflin/gitlab-exporter/internal/core/initializer"
 	"github.com/seawolflin/gitlab-exporter/internal/models"
 	"github.com/xanzy/go-gitlab"
 	"log"
-	"time"
 )
-
-type usersCache struct {
-	cache []*gitlab.User
-}
-
-const CacheKey = "users"
 
 func init() {
 	initializer.Registry(func() {
-		context.GetInstance().OnCacheEvicted(CacheKey, listUserFromGitlab)
-
 		_, err := context.GetInstance().Cron().AddFunc("@every 24h", func() {
-			listUserFromGitlab(context.GetInstance().Cache())
+			listUserFromGitlab()
 		})
 		if err != nil {
 			log.Fatalf("Add User Cron err, err: %s", err.Error())
 		}
+		go listUserFromGitlab()
 	})
 }
 
-func ListAll() []*gitlab.User {
-	c := context.GetInstance().Cache()
-	if users, found := c.Get(CacheKey); found {
-		log.Println("read from cache.")
-		return users.(usersCache).cache
-	}
+func ListAll() []*models.User {
+	users := models.User{}.QueryAll()
 
-	log.Println("Trigger list users from gitlab.")
-	go listUserFromGitlab(c)
+	if len(users) > 0 {
+		log.Println("read from local db.")
+		return users
+	}
 
 	return nil
 }
 
-func listUserFromGitlab(c *cache.Cache) {
+func listUserFromGitlab() {
 	log.Println("listUserFromGitlab")
 
 	userService := context.GetInstance().GitlabClient().Users
@@ -67,9 +56,6 @@ func listUserFromGitlab(c *cache.Cache) {
 	}
 
 	for _, user := range users {
-		u := models.User{}
-		u.AddOrUpdate(user)
+		models.User{}.AddOrUpdate(user)
 	}
-
-	c.Set(CacheKey, usersCache{users}, 24*time.Hour)
 }

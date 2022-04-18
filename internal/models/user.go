@@ -50,13 +50,27 @@ type User struct {
 	UsingLicenseSeat               bool
 }
 
-func (u *User) AddOrUpdate(user *gitlab.User) {
-	db.DB.Where("gitlab_id = ?", user.ID).First(u)
+func (u User) AddOrUpdate(user *gitlab.User) {
+	db.DB.Where("gitlab_id = ?", user.ID).First(&u)
 
-	utils.CopyStruct(user, u)
+	utils.CopyStruct(user, &u)
 
 	u.GitlabId = user.ID
 	u.GitlabCreatedAt = user.CreatedAt
 	u.LastActivityOn = (*time.Time)(user.LastActivityOn)
 
+	db.DB.Save(&u)
+}
+
+func (u User) Query(gitlabId int) *User {
+	db.DB.Where("gitlab_id = ?", gitlabId).First(&u)
+
+	return &u
+}
+
+func (u User) QueryAll() []*User {
+	var users []*User
+	db.DB.Find(&users)
+
+	return users
 }

@@ -5,7 +5,6 @@ import (
 	"github.com/seawolflin/gitlab-exporter/internal/common/utils"
 	gitlabUser "github.com/seawolflin/gitlab-exporter/internal/gitlab/user"
 	"strconv"
-	"time"
 )
 
 type userCollector struct {
@@ -46,19 +45,19 @@ func (collector *userCollector) Collect(ch chan<- prometheus.Metric) {
 	for _, user := range users {
 		ch <- prometheus.MustNewConstMetric(collector.userStateMetric, prometheus.GaugeValue,
 			convertStateToValue(user.State),
-			strconv.Itoa(user.ID), user.Name, user.Username, user.Email)
+			strconv.Itoa(user.GitlabId), user.Name, user.Username, user.Email)
 		ch <- prometheus.MustNewConstMetric(collector.userCreateAtMetric, prometheus.GaugeValue,
-			float64(user.CreatedAt.Unix()),
-			strconv.Itoa(user.ID), user.Name, user.Username, user.Email)
+			float64(user.GitlabCreatedAt.Unix()),
+			strconv.Itoa(user.GitlabId), user.Name, user.Username, user.Email)
 		ch <- prometheus.MustNewConstMetric(collector.userIsAdminMetric, prometheus.GaugeValue,
 			utils.ConvertBoolToValue(user.IsAdmin),
-			strconv.Itoa(user.ID), user.Name, user.Username, user.Email)
+			strconv.Itoa(user.GitlabId), user.Name, user.Username, user.Email)
 
 		if user.LastActivityOn != nil {
-			lastActivityOn := time.Time(*user.LastActivityOn)
+			lastActivityOn := *user.LastActivityOn
 			ch <- prometheus.MustNewConstMetric(collector.userLastActivityOnMetric, prometheus.GaugeValue,
 				float64(lastActivityOn.Unix()),
-				strconv.Itoa(user.ID), user.Name, user.Username, user.Email)
+				strconv.Itoa(user.GitlabId), user.Name, user.Username, user.Email)
 		}
 	}
 }
