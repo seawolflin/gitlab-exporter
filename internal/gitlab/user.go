@@ -1,35 +1,11 @@
-package user
+package gitlab
 
 import (
 	"github.com/seawolflin/gitlab-exporter/internal/core/context"
-	"github.com/seawolflin/gitlab-exporter/internal/core/initializer"
 	"github.com/seawolflin/gitlab-exporter/internal/models"
 	"github.com/xanzy/go-gitlab"
 	"log"
 )
-
-func init() {
-	initializer.Registry(func() {
-		_, err := context.GetInstance().Cron().AddFunc("@every 24h", func() {
-			listUserFromGitlab()
-		})
-		if err != nil {
-			log.Fatalf("Add User Cron err, err: %s", err.Error())
-		}
-		go listUserFromGitlab()
-	})
-}
-
-func ListAll() []*models.User {
-	users := models.User{}.QueryAll()
-
-	if len(users) > 0 {
-		log.Println("read from local db.")
-		return users
-	}
-
-	return nil
-}
 
 func listUserFromGitlab() {
 	log.Println("listUserFromGitlab")

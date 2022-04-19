@@ -10,9 +10,9 @@ import (
 
 type User struct {
 	gorm.Model
-	GitlabId                       int `gorm:"uniqueIndex"`
-	Username                       string
-	Email                          string
+	GitlabId                       int    `gorm:"uniqueIndex"`
+	Username                       string `gorm:"uniqueIndex"`
+	Email                          string `gorm:"uniqueIndex"`
 	Name                           string
 	State                          string
 	WebURL                         string
@@ -64,6 +64,12 @@ func (u User) AddOrUpdate(user *gitlab.User) {
 
 func (u User) Query(gitlabId int) *User {
 	db.DB.Where("gitlab_id = ?", gitlabId).First(&u)
+
+	return &u
+}
+
+func (u User) QueryByEmail(email string) *User {
+	db.DB.Where("email = ?", email).First(&u)
 
 	return &u
 }

@@ -8,10 +8,11 @@ import (
 	"net/http"
 )
 
-// 匿名导入，为了执行collector的init方法，用于注册prometheus的方法注册collector
+// 匿名导入，为了执行init方法
 import (
 	_ "github.com/seawolflin/gitlab-exporter/internal/collector"
 	_ "github.com/seawolflin/gitlab-exporter/internal/db"
+	_ "github.com/seawolflin/gitlab-exporter/internal/gitlab"
 )
 
 func main() {

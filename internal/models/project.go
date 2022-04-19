@@ -236,3 +236,10 @@ func (p Project) QueryAll() []*Project {
 
 	return projects
 }
+
+func (p Project) QueryAllProjectId() []int {
+	var results []int
+	db.DB.Model(&Project{}).Select("gitlab_id").Find(&results)
+
+	return results
+}
