@@ -8,7 +8,7 @@ import (
 
 func init() {
 	initializer.Registry(func() {
-		_, err := context.GetInstance().Cron().AddFunc("@every 24h", func() {
+		_, err := context.GetInstance().Cron().AddFunc("0 2 * * *", func() {
 			go listUserFromGitlab()
 			go listProjectFromGitlab()
 			go listCommitFromGitlab()
