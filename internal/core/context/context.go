@@ -2,30 +2,21 @@ package context
 
 import (
 	"flag"
-	"github.com/patrickmn/go-cache"
 	"github.com/robfig/cron/v3"
 	"github.com/xanzy/go-gitlab"
 	"net/url"
 	"sync"
-	"time"
 )
 
 type context struct {
-	gitlabUrl                  string
-	privateToken               string
-	gitlabClient               *gitlab.Client
-	cache                      *cache.Cache // 缓存gitlab上的数据，不需要每次都请求
-	onCacheEvictedHandlers     map[string]func(c *cache.Cache)
-	onCacheEvictedHandlersLock *sync.RWMutex
-	c                          *cron.Cron
+	gitlabUrl    string
+	privateToken string
+	gitlabClient *gitlab.Client
+	c            *cron.Cron
 }
 
 func (ctx *context) Cron() *cron.Cron {
 	return ctx.c
-}
-
-func (ctx *context) Cache() *cache.Cache {
-	return ctx.cache
 }
 
 func (ctx *context) GitlabClient() *gitlab.Client {
@@ -57,25 +48,8 @@ func (ctx *context) Parse() {
 	}
 	ctx.gitlabClient = client
 
-	ctx.cache = cache.New(5*time.Minute, 5*time.Minute)
-	ctx.onCacheEvictedHandlers = make(map[string]func(c *cache.Cache), 16)
-	ctx.onCacheEvictedHandlersLock = &sync.RWMutex{}
-	ctx.cache.OnEvicted(func(key string, _ interface{}) {
-		ctx.onCacheEvictedHandlersLock.RLock()
-		defer ctx.onCacheEvictedHandlersLock.RUnlock()
-
-		go ctx.onCacheEvictedHandlers[key](ctx.cache)
-	})
-
 	ctx.c = cron.New()
 	ctx.c.Start()
-}
-
-func (ctx context) OnCacheEvicted(key string, f func(c *cache.Cache)) {
-	ctx.onCacheEvictedHandlersLock.Lock()
-	defer ctx.onCacheEvictedHandlersLock.Unlock()
-
-	ctx.onCacheEvictedHandlers[key] = f
 }
 
 func (ctx *context) check() {

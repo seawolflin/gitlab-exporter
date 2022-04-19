@@ -3,7 +3,7 @@ package collector
 import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/seawolflin/gitlab-exporter/internal/common/utils"
-	gitlabProject "github.com/seawolflin/gitlab-exporter/internal/gitlab/project"
+	"github.com/seawolflin/gitlab-exporter/internal/models"
 )
 
 type projectCollector struct {
@@ -56,7 +56,7 @@ func (collector *projectCollector) Describe(ch chan<- *prometheus.Desc) {
 }
 
 func (collector *projectCollector) Collect(ch chan<- prometheus.Metric) {
-	projects := gitlabProject.ListAll()
+	projects := models.Project{}.QueryAll()
 
 	for _, project := range projects {
 		ch <- prometheus.MustNewConstMetric(collector.projectCommitCountMetric, prometheus.GaugeValue,
