@@ -1,6 +1,6 @@
 FROM golang:alpine as builder
 
-RUN apk --no-cache add git gcc
+RUN apk --no-cache add git gcc g++
 
 WORKDIR /go/src/github.com/seawolflin/gitlab-exporter/
 COPY . .
