@@ -45,6 +45,7 @@ func (c Commit) AddOrUpdate(commit *gitlab.Commit, date *time.Time) {
 		c.Status = string(*commit.Status)
 	}
 	c.Date = date
+	utils.CopyStruct(commit.Stats, &c.Stats)
 
 	db.DB.Save(&c)
 }
