@@ -4,6 +4,7 @@ import (
 	"github.com/seawolflin/gitlab-exporter/internal/core/initializer"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"os"
 )
 
 var DB *gorm.DB
@@ -16,7 +17,14 @@ func init() {
 
 func Open() {
 	var err error
-	DB, err = gorm.Open(sqlite.Open("gitlab.db"), &gorm.Config{
+	var dbFile string
+	dbDir := os.Getenv("DATA_DIR")
+	if dbDir != "" {
+		dbFile = dbDir + "/gitlab.db"
+	} else {
+		dbFile = "gitlab.db"
+	}
+	DB, err = gorm.Open(sqlite.Open(dbFile), &gorm.Config{
 		DisableForeignKeyConstraintWhenMigrating: true,
 	})
 	if err != nil {

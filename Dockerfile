@@ -17,6 +17,7 @@ WORKDIR /root/
 
 COPY --from=0 /go/src/github.com/seawolflin/gitlab-exporter/gitlab-exporter .
 
+ENV DATA_DIR "/root/data"
 ENV URL ""
 ENV TOKEN ""
 
