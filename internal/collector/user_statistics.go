@@ -47,15 +47,15 @@ func (collector *userStatisticsCollector) Collect(ch chan<- prometheus.Metric) {
 		user := models.User{}.QueryByEmail(email)
 		ch <- prometheus.MustNewConstMetric(collector.userDailyCommitCntMetric, prometheus.GaugeValue,
 			float64(commitStats.CommitCnt),
-			strconv.Itoa(user.GitlabId), user.Name, user.Username, user.Email, commitStats.CommitDate)
+			strconv.Itoa(user.GitlabId), commitStats.AuthorName, user.Username, email, commitStats.CommitDate)
 		ch <- prometheus.MustNewConstMetric(collector.userDailyAdditionLinesMetric, prometheus.GaugeValue,
 			float64(commitStats.Additions),
-			strconv.Itoa(user.GitlabId), user.Name, user.Username, user.Email, commitStats.CommitDate)
+			strconv.Itoa(user.GitlabId), commitStats.AuthorName, user.Username, email, commitStats.CommitDate)
 		ch <- prometheus.MustNewConstMetric(collector.userDailyDeletionLinesMetric, prometheus.GaugeValue,
 			float64(commitStats.Deletions),
-			strconv.Itoa(user.GitlabId), user.Name, user.Username, user.Email, commitStats.CommitDate)
+			strconv.Itoa(user.GitlabId), commitStats.AuthorName, user.Username, email, commitStats.CommitDate)
 		ch <- prometheus.MustNewConstMetric(collector.userDailyTotalModifyLinesMetric, prometheus.GaugeValue,
 			float64(commitStats.Total),
-			strconv.Itoa(user.GitlabId), user.Name, user.Username, user.Email, commitStats.CommitDate)
+			strconv.Itoa(user.GitlabId), commitStats.AuthorName, user.Username, email, commitStats.CommitDate)
 	}
 }

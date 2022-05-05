@@ -54,6 +54,7 @@ type UserCommitStats struct {
 	CommitStats
 	CommitCnt  int
 	CommitDate string
+	AuthorName string
 }
 
 func (c Commit) QueryStats(date *time.Time) map[string]UserCommitStats {
@@ -64,9 +65,9 @@ func (c Commit) QueryStats(date *time.Time) map[string]UserCommitStats {
 
 	db.DB.
 		Model(&Commit{}).
-		Select("author_email, sum(stats_additions) as additions,"+
+		Select("author_email, author_name, sum(stats_additions) as additions,"+
 			" sum(stats_deletions) as deletions, sum(stats_total) as total, count(1) as commit_cnt").
-		Group("author_email").Where("date = ?", date).
+		Group("author_email, author_name").Where("date = ?", date).
 		Find(&results)
 
 	var stats = make(map[string]UserCommitStats)
@@ -74,6 +75,7 @@ func (c Commit) QueryStats(date *time.Time) map[string]UserCommitStats {
 		stats[result.AuthorEmail] = UserCommitStats{
 			CommitCnt:  result.CommitCnt,
 			CommitDate: date.Format("2006-01-02"),
+			AuthorName: result.AuthorName,
 			CommitStats: CommitStats{
 				Additions: result.Additions,
 				Deletions: result.Deletions,
