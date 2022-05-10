@@ -18,6 +18,8 @@ func listCommitFromGitlab() {
 	yesterdayStart := utils.TodayStart().AddDate(0, 0, -1)
 	yesterdayEnd := utils.TodayEnd().AddDate(0, 0, -1)
 	withStats := true
+	all := true
+	firstParent := true
 
 	for _, projectId := range projectIds {
 		page := 1
@@ -27,9 +29,11 @@ func listCommitFromGitlab() {
 					Page:    page,
 					PerPage: 100,
 				},
-				Since:     &yesterdayStart,
-				Until:     &yesterdayEnd,
-				WithStats: &withStats,
+				Since:       &yesterdayStart,
+				Until:       &yesterdayEnd,
+				WithStats:   &withStats,
+				All:         &all,
+				FirstParent: &firstParent,
 			})
 			if err != nil {
 				log.Printf("获取项目%d的提交列表失败, %v", projectId, err)
